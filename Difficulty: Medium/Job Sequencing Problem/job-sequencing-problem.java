@@ -1,80 +1,76 @@
 //{ Driver Code Starts
-import java.io.*;
-import java.lang.*;
+// Initial Template for Java
 import java.util.*;
 
-class Job {
-    int id, profit, deadline;
-    Job(int x, int y, int z){
-        this.id = x;
-        this.deadline = y;
-        this.profit = z; 
-    }
-}
 
-class GfG {
-    public static void main(String[] args) throws IOException{
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        
-        //testcases
-		int t = Integer.parseInt(br.readLine().trim());
-		while(t-->0){
-            String inputLine[] = br.readLine().trim().split(" ");
-            
-            //size of array
-            int n = Integer.parseInt(inputLine[0]);
-            Job[] arr = new Job[n];
-            inputLine = br.readLine().trim().split(" ");
-            
-            //adding id, deadline, profit
-            for(int i=0, k=0; i<n; i++){
-                arr[i] = new Job(Integer.parseInt(inputLine[k++]), Integer.parseInt(inputLine[k++]), Integer.parseInt(inputLine[k++]));
-            }
-            
-            Solution ob = new Solution();
-            
-            //function call
-            int[] res = ob.JobScheduling(arr, n);
-            System.out.println (res[0] + " " + res[1]);
-        }
-    }
-}
 // } Driver Code Ends
 
+class Solution {
 
-class Solution
-{
-    //Function to find the maximum profit and the number of jobs done.
-    int[] JobScheduling(Job arr[], int n)
-    {
-        // Your code here
-        Arrays.sort(arr,(x,y)->y.profit-x.profit);
-        int maxDeadline=0;
-        for(Job j:arr) maxDeadline=Math.max(maxDeadline,j.deadline);
-        int deadlines[]=new int[maxDeadline+1];
-        Arrays.fill(deadlines,-1);
-        int maxProfit=0,totalJobs=0;
-        for(Job j:arr){
-            for(int i=j.deadline;i>0;i--){
-                if(deadlines[i]==-1){
-                    deadlines[i]=j.profit;
-                    maxProfit+=j.profit;
-                    totalJobs++;
+    public ArrayList<Integer> jobSequencing(int[] d, int[] p) {
+       int n = d.length;
+        Job[] arr = new Job[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = new Job(d[i], p[i]);
+        }
+        
+        Arrays.sort(arr, (a, b) -> b.profit - a.profit);
+        
+        int maxJobDeadline = 0;
+        for (Job a : arr) {
+            maxJobDeadline = Math.max(maxJobDeadline, a.deadline);
+        }
+        
+        int[] fillTime = new int[maxJobDeadline];
+        Arrays.fill(fillTime, -1);
+        
+        int profit = 0, jobsDone = 0;
+        for (Job a : arr) {
+            for (int i = a.deadline - 1; i >= 0; i--) {
+                if (fillTime[i] == -1) {
+                    fillTime[i] = i;
+                    profit += a.profit;
+                    jobsDone++;
                     break;
                 }
             }
         }
-        return new int[]{totalJobs,maxProfit};
+        
+        return new ArrayList<>(Arrays.asList(jobsDone, profit));
+    }
+
+    class Job {
+        int deadline, profit;
+        Job(int deadline, int profit) {
+            this.deadline = deadline;
+            this.profit = profit;
+        }
     }
 }
 
-/*
-class Job {
-    int id, profit, deadline;
-    Job(int x, int y, int z){
-        this.id = x;
-        this.deadline = y;
-        this.profit = z; 
+
+//{ Driver Code Starts.
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int t = Integer.parseInt(sc.nextLine().trim());
+
+        while (t-- > 0) {
+            String[] deadlineInput = sc.nextLine().trim().split("\\s+");
+            int[] deadline =
+                Arrays.stream(deadlineInput).mapToInt(Integer::parseInt).toArray();
+
+            String[] profitInput = sc.nextLine().trim().split("\\s+");
+            int[] profit =
+                Arrays.stream(profitInput).mapToInt(Integer::parseInt).toArray();
+            Solution obj = new Solution();
+            ArrayList<Integer> result = obj.jobSequencing(deadline, profit);
+            System.out.println(result.get(0) + " " + result.get(1));
+            System.out.println("~");
+        }
+
+        sc.close();
     }
 }
-*/
+// } Driver Code Ends
